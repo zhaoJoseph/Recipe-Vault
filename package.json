@@ -2,6 +2,9 @@
   "name": "recipefoodapp",
   "version": "1.0.0",
   "main": "node_modules/expo/AppEntry.js",
+  "android": {
+    "softwareKeyboardLayoutMode": "pan"
+  },
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
@@ -10,15 +13,43 @@
     "eject": "expo eject"
   },
   "dependencies": {
-    "expo": "~44.0.0",
+    "@react-native-async-storage/async-storage": "~1.15.0",
+    "@react-native-community/bob": "^0.17.1",
+    "@react-native-picker/picker": "2.2.1",
+    "@react-navigation/bottom-tabs": "^6.2.0",
+    "@react-navigation/native": "^6.0.8",
+    "@react-navigation/stack": "^6.1.1",
+    "axios": "^0.25.0",
+    "digicard-react-native-number-please": "^1.1.6",
+    "eslint-plugin-react-hooks": "^4.3.0",
+    "expo": "^44.0.0",
+    "expo-constants": "~13.0.1",
     "expo-status-bar": "~1.2.0",
+    "formik": "^2.2.9",
     "react": "17.0.1",
     "react-dom": "17.0.1",
     "react-native": "0.64.3",
-    "react-native-web": "0.17.1"
+    "react-native-gesture-handler": "~2.1.0",
+    "react-native-ionicons": "^4.6.5",
+    "react-native-modal": "^13.0.0",
+    "react-native-safe-area-context": "3.3.2",
+    "react-native-web": "0.17.1",
+    "react-native-wheel-picker-android": "^2.0.6",
+    "styled-components": "^5.3.3",
+    "yup": "^0.32.11"
   },
   "devDependencies": {
-    "@babel/core": "^7.12.9"
+    "@babel/core": "^7.12.9",
+    "@types/react": "~17.0.21",
+    "@types/react-native": "~0.64.12",
+    "typescript": "~4.3.5"
+  },
+  "extends": [
+    "react-hooks"
+  ],
+  "rules": {
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": "warn"
   },
   "private": true
 }
