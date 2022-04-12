@@ -29,9 +29,9 @@ const Create = ({navigation}) => {
     const {recipe, setRecipe} = useContext(recipeContext);
 
 
-    const time = [{id: "hours", label: "Hrs", min: 0, max: 24 }, {id: "minutes", label: "Mins", min: 0, max: 59},];
+    const time = [{id: "hours", label: "H", min: 0, max: 24 }, {id: "minutes", label: "M", min: 0, max: 59},{id: "seconds", label: "S", min: 0, max: 59},];
 
-    const initialTime = { hours: 0, minutes: 0 };
+    const initialTime = { hours: 0, minutes: 0, seconds: 0 };
 
     const [PrepTime, SetPrepTime] = useState(initialTime);
 
@@ -42,7 +42,8 @@ const Create = ({navigation}) => {
       title: values.name,
       prep: PrepTime,
       cook: CookTime,
-      servings: values.serve
+      servings: values.serve,
+      steps: null,
       });
       navigation.navigate("CreateStack", {screen: 'IngredientStep'});
     } 
@@ -52,12 +53,10 @@ const Create = ({navigation}) => {
         <StyledContainer>
             <InnerContainer>
                 <Formik
-                initialValues={{name: '', }}
-                onSubmit={(values) => {
-                      handleCreate(values);
-                      }}
+                initialValues={{name: '', serve: ''}}
+                onSubmit={(values) => handleCreate(values)}
                 >
-                {({handleChange, handleBlur, values}) => (
+                {({handleChange, handleBlur, handleSubmit, values}) => (
                     <StyledFormArea>
                         <MyTextInput
                         label="Set the name of your delicious recipe!"
@@ -89,7 +88,7 @@ const Create = ({navigation}) => {
                         placeholderTextColor={Colors.darklight}
                         />
                       <StyledButton
-                      onPress={handleCreate}
+                      onPress={handleSubmit}
                       >
                         <ButtonText>List Ingredients</ButtonText>
                       </StyledButton>

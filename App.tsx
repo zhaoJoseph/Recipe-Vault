@@ -9,9 +9,13 @@ import { userContext } from './app/Context/userContext';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+import { ToastProvider } from 'react-native-toast-notifications';
+
 export default function App() {
 
   const [UserId, setUserId] = useState("");
+
+  const [loading, setLoading] = useState(true);
 
   const checkLoggedIn = () => {
     AsyncStorage
@@ -29,8 +33,10 @@ export default function App() {
   }
 
   return (
-    <userContext.Provider value={{UserId, setUserId}}>
+    <ToastProvider>
+    <userContext.Provider value={{UserId, setUserId, loading, setLoading}}>
       < RootStack/>
     </userContext.Provider>
+    </ToastProvider>
   );
 }

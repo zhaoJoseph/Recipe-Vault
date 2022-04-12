@@ -38,7 +38,7 @@ const Register = ({navigation}) => {
     const [message, setMessage] = useState();
 
     const handleRegister = (credentials) => {
-    const url = "http://10.0.2.2:3000/register";
+    const url = "https://foodapi-vs7cd2fg5a-uc.a.run.app/register";
     axios.post(url, {params: {
       email: credentials.email,
       password: credentials.password
@@ -56,6 +56,8 @@ const Register = ({navigation}) => {
         console.log(error);
         setMessage("An error occured please try again later");
 
+    }).catch((error) => {
+      console.log(error);
     })  
   }
 

@@ -45,29 +45,30 @@ const Login=({navigation})=> {
   const {UserId, setUserId} = useContext(userContext);
 
   const handleLogin = (credentials) => {
-    const url = "http://10.0.2.2:3000/authenticate";
+    const url = "https://foodapi-vs7cd2fg5a-uc.a.run.app/authenticate";
     axios.get(url, {params: {
       email: credentials.email,
       password: credentials.password
       }}).then((res) => {
         const result = res.data;
-        if(result.message == 'user found!'){
+        console.log(result);
           AsyncStorage
-          .setItem('id', JSON.stringify({id: result.data[0].id}))
+          .setItem('id', JSON.stringify({id: result.data}))
           .then(()=> {
-            setUserId({id: result.data[0].id})
+            setUserId({id: result.data})
           })
           .catch((error) => {
             console.log(error);
             setMessage("Could not secure credentials please try again later.");
           })
-        }else{
-          setMessage("User Not Found");
-
-        }
       }).catch((error) => {
+        if( error.response.status == 404 && error.response.data['message'] != null){
+          const errorMessage = error.response.data['message'];
+          setMessage(errorMessage);
+        }else{
         console.log(error);
-        setMessage("An error occured while trying to login, please try again later");
+        setMessage("An error occured while trying to login, please try again later.");
+        }
     })  
   }
 

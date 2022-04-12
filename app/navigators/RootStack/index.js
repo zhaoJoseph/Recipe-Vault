@@ -63,7 +63,8 @@ const CreateStack = () => {
         component: CreateStep,
         text: '',
     }
-    ]);
+    ]
+    );
     const [ingredientsList, setIngredientsList] = useState([]);
     const [recipe, setRecipe] = useState({});
 
@@ -89,7 +90,7 @@ const RootStack =() => {
 
     return (
         <userContext.Consumer>
-            {({UserId}) => (            
+            {({UserId, loading}) => (            
             <NavigationContainer>
                 <Stack.Navigator
                     screenOptions={{
