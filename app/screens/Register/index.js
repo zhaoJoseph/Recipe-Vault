@@ -30,15 +30,15 @@ import {Formik} from 'formik';
 
 import * as yup from 'yup';
 
-import {Colors} from '../../Constants/Colors';
+import {Colors, Links} from '../../Constants';
 
-const Register = ({navigation}) => {
+const Register = ({navigation} : Props) => {
     const [hidePassword, setHidePassword] = useState(true);
 
     const [message, setMessage] = useState();
 
     const handleRegister = (credentials) => {
-    const url = "https://foodapi-vs7cd2fg5a-uc.a.run.app/register";
+    const url = Links.user;
     axios.post(url, {params: {
       email: credentials.email,
       password: credentials.password
@@ -46,19 +46,17 @@ const Register = ({navigation}) => {
         const result = res.data;
         if(result.message == 'Account Created!'){
           navigation.navigate('Login')
-
+        }else if(result.message == 'Error'){
+          let errorBody = JSON.parse(result.error);
+          if(errorBody.code == "ER_DUP_ENTRY"){
+            setMessage("Email already in use.");
+          }
         }else{
           setMessage("An error occured please try again later");
         }
-      
-        
       }).catch((error) => {
-        console.log(error);
-        setMessage("An error occured please try again later");
-
-    }).catch((error) => {
-      console.log(error);
-    })  
+          setMessage("An error occured while trying to register, please try again later.");
+    })
   }
 
     return (
@@ -141,7 +139,7 @@ const registerValidate = yup.object().shape({
       .required('Password required'),
 })
 
-const MyTextInput = ({label, icon, isPassword, hidePassword, setHidePassword, setMessage, ...props}) => {
+const MyTextInput = ({label, icon, isPassword, hidePassword, setHidePassword, setMessage, ...props} : Props) => {
   return  (
     <View>
       <LeftIcon>
