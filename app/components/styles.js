@@ -1,12 +1,14 @@
 import styled from 'styled-components';
 import Constants from 'expo-constants';
-import {View, Text, Image, TextInput, TouchableOpacity, Dimensions, FlatList} from 'react-native';
+import { FlatList } from 'react-native-gesture-handler';
+import {View, Text, Image, TextInput, TouchableOpacity, Dimensions} from 'react-native';
 import {Colors} from '../Constants/Colors';
 
 export const StyledContainer = styled.View`
     flex: 1;
     padding: 25px;
     height: 100%;
+    width: 100%;
     background-color: ${Colors.primary};
 `
 
@@ -69,7 +71,7 @@ export const StyledInputArea = styled.TextInput`
 
 export const LeftIcon = styled.View`
     left: 15px;
-    top: 20px;
+    top: 30px;
     position: absolute;
     z-index: 1;
 `;
@@ -127,10 +129,9 @@ export const StyledSearchBar = styled.TextInput`
     color: ${Colors.tertiary};
 `;
 
-export const RecipeContainer = styled.Text`
-    background-color: ${Colors.secondary};
+export const RecipeContainer = styled.TouchableOpacity`
+    background-color: 'transparent';
     minHeight: 100px;
-    width: 45%;
     border-radius: 5px;
     margin: 5px;
 `;
@@ -138,15 +139,12 @@ export const RecipeContainer = styled.Text`
 
 export const StyledFlatList = styled.FlatList.attrs(() => ({
     contentContainerStyle: {
-        alignSelf: 'flex-end',
-        flexGrow: 1,
-        paddingBottom: 50,
+        flexDirection: 'column',
     },
 }))`
-    top: 50px;
-    marginBottom: 1px;
-    margin: 5px;
-
+    height: 90%;
+    margin: 10px;
+    marginBottom: 90px;
 `;
 
 export const FloatingButton = styled.TouchableOpacity`
