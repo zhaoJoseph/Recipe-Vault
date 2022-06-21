@@ -1,6 +1,6 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState, useRef} from 'react';
 
-import { View, Text, Dimensions, FlatList, ScrollView, VirtualizedView } from 'react-native';
+import { View, Text, Dimensions, KeyboardAvoidingView } from 'react-native';
 
 import {Colors} from '../../Constants/Colors';
 
@@ -8,15 +8,15 @@ import {Octicons } from '@expo/vector-icons';
 
 import {Formik} from 'formik';
 
-import axios from 'axios';
+import { useNavigation } from '@react-navigation/native';
 
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import Flatlist from './Flatlist';
 
 import {
 StyledFormArea, 
 StyledContainer,
 InnerContainer,
-LeftIcon,
+LeftIcon,   
 StyledSearchBar,
 GridContainer,
 RecipeContainer,
@@ -25,77 +25,46 @@ FloatingButton,
 ButtonView,
 } from '../../components/styles.js';
 
-const Recipes = ({navigation}) => {
+const Recipes = ({navigation} : Props) => {
 
-    const [list, setList] = useState([]);
-    //TODO: render the user's current recipes and if none render a text requesting user to create recipes
-    const getRecipes = (credentials) => {
-    const url = "http://10.0.2.2:3000/recipesList";
-    axios.get(url, {params: {
-      id: credentials.id
-      }}).then((res) => {
-        setList([res.data.recipes]);
-      }).catch((error) => {
-        console.log(error);
-    })  
-  }
+    const [searchTerm, setSearchTerm] = useState("");
 
-    useEffect(() => {
-        AsyncStorage.getItem('id', (err, result) => {
-            if(!err){
-                getRecipes(JSON.parse(result));
-            }
-        })
-    }, [list])
+    const listRef = useRef();
 
     const addRecipe = () => {
-        navigation.navigate("CreateStack", {screen: 'Create'});
+        navigation.navigate("CreateStack", {screen: 'Create', params: {mode: 'Create'}});
     }
 
     return (
         <StyledContainer>
             <InnerContainer>
-                <Formik
-                style={{
-                    flex: 1,
-                }}
-                >
-                {({...props}) => (
-                    <View style={{
-                        position: 'absolute',
-                        height: "100%",
-                        flex: 1,
-                    }}>
+                    <View>
                         <MySearchBar
                         icon="search"
                         placeholder="Search your recipes"
+                        searchTerm={searchTerm}
+                        onChange={setSearchTerm}
+                        search={(e) => listRef.current.fetchResult({term: e})}
                         />
-                        <View style={{ 
-                            flex: 1,
+                        <View style={{
+                            top: 80, 
                         }}>
-                        {(list[0] && list[0].length > 0) ? (
-                        <GridList 
-                        columns={2}
-                        items={list}
-                        />) : 
-                        <Text style={{ 
-                            textAlign: 'center',
-                        }}> Created recipes will show up here! </Text>
-                        }
+                        <Flatlist ref={listRef} navigation={navigation} />
+                        </View>
                         <FloatingButton
                         onPress={addRecipe}
                         >
                             <Text> + </Text>
                         </FloatingButton>
-                        </View>
-                    </View>)}
-                </Formik>
-            </InnerContainer>   
+                    </View>
+            </InnerContainer>
         </StyledContainer>
     );
+    
 }
 
-const MySearchBar = ({icon, ...props}) => {
+const MySearchBar = ({icon, searchTerm, onChange, search, ...props} : Props) => {
+
     return (
         <View style={{
             flex: 1,    
@@ -103,27 +72,18 @@ const MySearchBar = ({icon, ...props}) => {
             width: Dimensions.get('window').width,
             marginLeft: 10,
         }}>
-            <LeftIcon>
+            <LeftIcon style={{ top : 20 }}>
                 <Octicons name={icon} size={30} color={Colors.black} />
             </LeftIcon>
-            <StyledSearchBar {...props}/>
+            <StyledSearchBar 
+            value={searchTerm}
+            onChangeText={e => onChange(e)}
+            onSubmitEditing={() => {
+                search(searchTerm);
+            }}
+            {...props} />
         </View>
     )
-}
-
-const GridList = (props) => {
-    return (
-        
-        <StyledFlatList
-            key={props.columns}
-            numColumns={props.columns}
-            data={props.items}
-            renderItem={({item}) => {
-                return <RecipeContainer>{item.id}</RecipeContainer>
-            }}
-        />
-    )
-
 }
 
 export default Recipes;
