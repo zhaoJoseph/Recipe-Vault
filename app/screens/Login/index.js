@@ -10,11 +10,19 @@ import axios from 'axios';
 
 import * as yup from 'yup';
 
+import * as qs from 'qs';
+
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import {userContext} from '../../Context/userContext';
 
-import {Colors} from '../../Constants/Colors';
+import {Colors, Links} from '../../Constants';
+
+import * as Crypto from 'expo-crypto';
+
+import * as Random from 'expo-random';
+
+import { Buffer } from 'buffer';
 
 import { 
   StyledContainer, 
@@ -37,47 +45,120 @@ import {
 } from '../../components/styles.js';
 
 
-const Login=({navigation})=> {
+const Login=({navigation} : Props)=> {
   const [hidePassword, setHidePassword] = useState(true);
 
   const [message, setMessage] = useState();
 
   const {UserId, setUserId} = useContext(userContext);
 
-  const handleLogin = (credentials) => {
-    const url = "https://foodapi-vs7cd2fg5a-uc.a.run.app/authenticate";
-    axios.get(url, {params: {
-      email: credentials.email,
-      password: credentials.password
-      }}).then((res) => {
-        const result = res.data;
-        console.log(result);
-          AsyncStorage
-          .setItem('id', JSON.stringify({id: result.data}))
+  //create verifier and challenge code https://www.loginradius.com/blog/engineering/pkce/
+  function base64URLEncode(str) {
+      return str
+          .replace(/\+/g, '-')
+          .replace(/\//g, '_')
+          .replace(/=/g, '');
+  }
+
+  async function sha256(buffer): Promise<string> {
+      return await Crypto.digestStringAsync(
+        Crypto.CryptoDigestAlgorithm.SHA256,
+        buffer,
+        {encoding : Crypto.CryptoEncoding.BASE64}
+      ); 
+  }
+
+
+  const handleLogin = async (credentials) => {
+    const url = Links.accesscode;
+    try{
+    const randomBytes = await Random.getRandomBytesAsync(32);
+    const base64String = Buffer.from(randomBytes).toString('base64');
+    var verifier = base64URLEncode(base64String);
+    let result;
+    let tokenResult;
+    if(verifier){
+      try{
+        var challenge = base64URLEncode(await sha256(verifier));
+      }catch(err){
+        console.log(err);
+      }
+      await AsyncStorage.setItem('verifier', verifier);
+      let params = {
+        username: credentials.email,
+        password: credentials.password,
+        grant_type: "authorization_code",
+        client_id: "835e2ab849857e36ec036adb3b1e8839",
+        redirect_uri: Links.token,
+        code_challenge: challenge,
+        code_challenge_method: 'SHA256',
+        };
+      try{
+        result = await axios.get(url, {params : params});
+      }catch(err){
+        setMessage(err.response.data.message);
+
+      }
+    }
+
+    if(result && verifier){
+      verifier = await AsyncStorage.getItem('verifier');
+      let body = qs.stringify({ 
+        username: credentials.email,
+        grant_type: "authorization_code",
+        client_id: "835e2ab849857e36ec036adb3b1e8839",
+        redirect_uri: result.data.redirect_uri,
+        id: result.data.id,
+        code: result.data.code,
+        code_verifier: verifier
+        });
+      let config = {  
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        }
+      }
+      const tokenRequest = result.data;
+      tokenResult = await new Promise((resolve, reject) => {
+        resolve(axios.post(tokenRequest.url, body, config));
+      })
+      await AsyncStorage.clear();
+      verifier = null;
+    }
+
+    if(tokenResult){
+      var items = [['access_token', tokenResult.data.access_token], ['id', tokenResult.data.id], ['refresh_token', tokenResult.data.refresh_token]]
+
+      await AsyncStorage
+          .multiSet(items)
           .then(()=> {
-            setUserId({id: result.data})
+            setUserId({id: tokenResult.data.id})
           })
           .catch((error) => {
             console.log(error);
             setMessage("Could not secure credentials please try again later.");
           })
-      }).catch((error) => {
-        if( error.response.status == 404 && error.response.data['message'] != null){
-          const errorMessage = error.response.data['message'];
-          setMessage(errorMessage);
-        }else{
-        console.log(error);
-        setMessage("An error occured while trying to login, please try again later.");
-        }
-    })  
+    }else if(!message){
+      setMessage("Error setting variables or token")
+    }else{
+      setMessage("An error occured while trying to login, please try again later.");
+    }
+    }catch{(error) => {
+          if( error.response.status == 404 && error.response.data['message'] != null){
+            const errorMessage = error.response.data['message'];
+            setMessage(errorMessage);
+          }else{
+            console.log(error.response.data);
+          setMessage("An error occured while trying to login, please try again later.");
+          }
+      }}
   }
 
-  return (
+  return (  
       <StyledContainer>
         <InnerContainer>
           <PageLogo resizeMode="cover" source={require('../../../assets/favicon.png')}/>
-          <PageTitle>App</PageTitle>
-          <PageSubTitle>Login to Account</PageSubTitle>
+          <PageTitle>Quick Recipes</PageTitle>
+          <PageSubTitle>Login</PageSubTitle>
 
           <Formik
             initialValues={{email: '', password: ''}}
@@ -124,7 +205,7 @@ const Login=({navigation})=> {
               </StyledButton>
                 <ExtraView>
                   <ExtraText>
-                    Don't have an account? 
+                    Don&apos;t have an account? 
                   </ExtraText>
                   <TextLink
                   onPress={() => navigation.navigate('Register')}
@@ -150,7 +231,7 @@ const loginValidate = yup.object().shape({
       .required('Password required'),
 })
 
-const MyTextInput = ({label, icon, isPassword, hidePassword, setHidePassword, setMessage,...props}) => {
+const MyTextInput = ({label, icon, isPassword, hidePassword, setHidePassword, setMessage,...props} : Props) => {
   return  (
     <View>
       <LeftIcon>
