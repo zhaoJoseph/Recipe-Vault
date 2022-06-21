@@ -1,4 +1,4 @@
-import React , {useEffect} from 'react';
+import React , {useEffect, useContext} from 'react';
 
 import {Text, View, Button} from 'react-native';
 
@@ -7,6 +7,8 @@ import {Formik} from 'formik';
 import {Octicons, Ionicons, FontAwesome, MaterialCommunityIcons } from '@expo/vector-icons';
 
 import {Colors} from '../../Constants/Colors';
+
+import {ingredientContext} from '../../Context/ingredientContext';
 
 import {StyledContainer, 
         InnerContainer,
@@ -21,19 +23,19 @@ import {StyledContainer,
 } from '../../components/styles.js';
 
 
-function ModalScreen({ navigation, route }) {
+function ModalScreen({ navigation, route } : Props) {
 
     const handleAdd = (data) => {
-        route.params.onReturn(data);
-        navigation.navigate("CreateStack", {
-        screen: "IngredientStep",})
+
+      navigation.navigate("CreateStack", {screen: "IngredientStep", params: {mode: route.params.mode, ingredient : data, oldIngredient: route.params?.ingredient ? route.params?.ingredient : ""}})
+
     }
 
   return (
       <StyledContainer>
             <InnerContainer>
                 <Formik
-                initialValues={{ingredient: '', quantity: ''}}
+                initialValues={{ingredient: route.params.ingredient || '', quantity: route.params.quantity || ''}}
                 onSubmit={(values) => {
                       handleAdd(values);
                       }}
@@ -70,7 +72,7 @@ function ModalScreen({ navigation, route }) {
   );
 }
 
-const MyTextInput = ({label, font, ...props}) => {
+const MyTextInput = ({label, font, ...props} : Props) => {
   return  (
     <View>
       <LeftIcon>
