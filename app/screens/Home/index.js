@@ -36,54 +36,48 @@ import {
 
 const Home = ({navigation}) => {
 
-    const {UserId, setUserId} = useContext(userContext);
-
-    const handleLogout = () =>{
-            AsyncStorage.clear()
-            .then(() =>{
-                setUserId(null);
-            })
-            .catch((err) =>{
-                console.log(err);
-            })
+    const logout = () => {
+        navigation.navigate("Logout");
     }
 
-    const handleRecipes = () => {
-        navigation.navigate("Recipes");
+    const handleNav = (name) => {
+
+        navigation.navigate(name);
     }
 
     const handleCreate = () => {
-         navigation.navigate("CreateStack", {screen: 'Create'});
+         navigation.navigate("CreateStack", {screen: 'Create', params: {mode: "Create"}});
     }
 
 
     return (
        <StyledContainer>
             <InnerContainer>
-                <PageTitle>Welcome Back</PageTitle>
+                <PageTitle style={{
+                    top: 100,
+                }}>Menu</PageTitle>
                 <Formik
                 >
                 {({handleSubmit}) => (
-                    <StyledFormArea>
+                    <StyledFormArea 
+                    style={{
+                        flex: 1,
+                        justifyContent: 'center',
+                    }}>
                          <StyledButton
-                        onPress={handleRecipes}
+                        onPress={() => handleNav("Recipes")}
                         >
-                        <ButtonText>My Recipes</ButtonText>
+                        <ButtonText>Recipes</ButtonText>
                         </StyledButton>
                          <StyledButton
-                        onPress={handleSubmit}
+                        onPress={() => handleNav("Import")}
                         >
-                        <ButtonText>Share Recipe</ButtonText>
+                        <ButtonText>Import</ButtonText>
                         </StyledButton>
                          <StyledButton
-                        onPress={handleSubmit}
+                        onPress={() => handleNav("Locate")}
                         >
-                        <ButtonText>Import Recipe</ButtonText>
-                        </StyledButton>
-                         <StyledButton
-                        onPress={handleSubmit}
-                        >
-                        <ButtonText>Locate Ingredients</ButtonText>
+                        <ButtonText>Locate</ButtonText>
                         </StyledButton>
                         <StyledButton
                         onPress={handleCreate}
@@ -91,7 +85,7 @@ const Home = ({navigation}) => {
                         <ButtonText>Create Recipe</ButtonText>
                         </StyledButton>
                          <StyledButton
-                        onPress={handleLogout}
+                        onPress={logout}
                         >
                         <ButtonText>Logout</ButtonText>
                         </StyledButton>

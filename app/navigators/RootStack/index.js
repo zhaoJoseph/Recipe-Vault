@@ -23,6 +23,11 @@ import Create from '../../screens/Create';
 import CreateStep from '../../screens/CreateStep';
 import IngredientStep from '../../screens/IngredientStep';
 import ModalScreen from '../../screens/ModalScreen';
+import ViewRecipe from '../../screens/ViewRecipe';
+import ImportRecipe from '../../screens/ImportRecipe';
+import Locate from '../../screens/Locate';
+import Logout from '../../screens/Logout';
+import CameraModal from '../../screens/CameraModal';
 
 const Stack = createStackNavigator();
 
@@ -41,7 +46,7 @@ const StepStack = () => {
         }}  
         >
             {
-                tabs.map((tab) => <StepTabs.Screen key={tab.name} name={tab.name} stepTitle={tab.stepTitle} component={tab.component} 
+                tabs.map((tab) => <StepTabs.Screen key={tab.name} name={tab.name} stepTitle={tab.stepTitle} component={tab.component} initialParams={tab.initialParams}
                 options={{
                     tabBarLabel: `${tab.stepTitle}`,
                     headerTitle: `${tab.stepTitle}`,
@@ -61,6 +66,7 @@ const CreateStack = () => {
         name: 'Step 1',
         stepTitle: 'Step 1',
         component: CreateStep,
+        initialParams: {},
         text: '',
     }
     ]
@@ -74,8 +80,10 @@ const CreateStack = () => {
         <tabContext.Provider value={{tabs, setTabs}}>
         <StackCreate.Navigator>   
         <StackCreate.Screen name="Create" component={Create}/>
+        <StackCreate.Screen name="CameraModal" component={CameraModal} 
+        screenOptions={{presentation: 'modal' }}/>
         <StackCreate.Screen name="IngredientStep" component={IngredientStep}/>
-        <StackCreate.Screen name="MyModal" component={ModalScreen} 
+        <StackCreate.Screen name="Add Ingredient" component={ModalScreen} 
         screenOptions={{ presentation: 'modal' }}/>
         <StackCreate.Screen name="StepStack" component={StepStack}/>
         </StackCreate.Navigator>
@@ -110,7 +118,12 @@ const RootStack =() => {
                     <Stack.Group>
                     <Stack.Screen name="Home" component={Home}/>
                     <Stack.Screen name="Recipes" component={Recipes} />
+                    <Stack.Screen name="View Recipe" component={ViewRecipe} 
+                    screenOptions={{ presentation: 'modal' }}/>
+                    <Stack.Screen name="Import" component={ImportRecipe} />
+                    <Stack.Screen name="Locate" component={Locate} />
                     <Stack.Screen name="CreateStack" component={CreateStack} />
+                    <Stack.Screen name="Logout" component={Logout} />
                     </Stack.Group>
                     ) : (
                     <Stack.Group>
