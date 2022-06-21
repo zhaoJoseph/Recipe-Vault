@@ -16,6 +16,8 @@ import NumberPlease from "digicard-react-native-number-please";
 
 import axios from 'axios';
 
+import * as yup from 'yup';
+
 import {recipeContext} from '../../Context/recipeContext';
 
 import {getToken} from '../../helpers';
@@ -201,11 +203,13 @@ const Create = ({navigation, route} : Props) => {
               onPress={() => setModalVisible(false)} title="close"/>
           </Modal>
             <InnerContainer>
-                {(ready) ? (<Formik
+                {(ready) ? 
+                (<Formik
                 initialValues={{name: recipe.title || '', serve: recipe.servings || ''}}
                 onSubmit={(values) => handleCreate(values)}
+                validationSchema={nameValidate}
                 >
-                {({handleChange, handleBlur, handleSubmit, values}) => (
+                {({handleChange, handleBlur, handleSubmit, values, touched, errors}) => (
                     <StyledFormArea style={{
                       flex: 1,
                       justifyContent: 'space-between',
@@ -218,6 +222,7 @@ const Create = ({navigation, route} : Props) => {
                         value={values.name}
                         placeholderTextColor={Colors.darklight}
                         />
+                        {((errors.name && touched.name) && <Text style={{ fontSize: 10, color: 'red' }}>{errors.name}</Text>)}
                         <StyledTextLabel>Prep Time</StyledTextLabel>
                         <NumberPlease
                         pickers={time}
@@ -281,6 +286,12 @@ const Create = ({navigation, route} : Props) => {
         </StyledContainer> 
     )
 }
+
+const nameValidate = yup.object().shape({
+  name: yup
+    .string()
+    .required('name required'),
+})
 
 const MyTextInput = ({label, font, ...props} : Props) => {
   return  (

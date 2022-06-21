@@ -91,7 +91,12 @@ const CreateStep = ({navigation, route} : Props) => {
 
     useEffect(() => {
         (async() =>{
-        if(returnValue){
+
+        var emptyTabs = tabs.some(tab => tab.text.trim() == '');
+
+        if(returnValue && emptyTabs){
+            alert("You have empty steps, remove all empty steps");
+        }else if(returnValue){
         var name = "";
         var url = "";
         let token = await getToken();
@@ -132,7 +137,7 @@ const CreateStep = ({navigation, route} : Props) => {
             }else{
                 listToast.show("An error occured while updating recipes.");
             }
-            //navigation.navigate("Logout");
+            navigation.navigate("Home");
         })
         setReturnValue(false);
         }
@@ -185,7 +190,6 @@ const CreateStep = ({navigation, route} : Props) => {
                 </View>
             </InnerContainer>)}
         </StyledContainer> 
-
     )
 
 }

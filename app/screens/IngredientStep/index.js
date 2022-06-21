@@ -175,7 +175,7 @@ const IngredientView = ({ingredient, quantity, index, navigation, mode, setLoadi
 IngredientStep.propTypes = {
     route: PropTypes.shape({
         params: PropTypes.shape({
-            mode: PropTypes.number.isRequired
+            mode: PropTypes.string.isRequired
         })
     }).isRequired
 }

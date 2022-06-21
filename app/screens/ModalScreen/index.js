@@ -10,6 +10,8 @@ import {Colors} from '../../Constants/Colors';
 
 import {ingredientContext} from '../../Context/ingredientContext';
 
+import * as yup from 'yup';
+
 import {StyledContainer, 
         InnerContainer,
         StyledFormArea,
@@ -39,8 +41,9 @@ function ModalScreen({ navigation, route } : Props) {
                 onSubmit={(values) => {
                       handleAdd(values);
                       }}
+                validationSchema={ingredientValidate}
                 >
-                {({handleChange, handleBlur, values, handleSubmit}) => (
+                {({handleChange, handleBlur, values, handleSubmit, touched, errors}) => (
                     <StyledFormArea>
                         <MyTextInput
                         label="Ingredient Name"
@@ -50,6 +53,7 @@ function ModalScreen({ navigation, route } : Props) {
                         value={values.ingredient}
                         placeholderTextColor={Colors.darklight}
                         />
+                        {((errors.ingredient && touched.ingredient) && <Text style={{ fontSize: 10, color: 'red' }}>{errors.ingredient}</Text>)}
                         <MyTextInput
                         label="Quantity"
                         font={<FontAwesome name="spoon" size={30} color={Colors.brand} />}
@@ -71,6 +75,12 @@ function ModalScreen({ navigation, route } : Props) {
         </StyledContainer> 
   );
 }
+
+const ingredientValidate = yup.object().shape({
+  ingredient: yup
+    .string()
+    .required("Ingredient name required."),
+});
 
 const MyTextInput = ({label, font, ...props} : Props) => {
   return  (
