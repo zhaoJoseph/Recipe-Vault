@@ -9,7 +9,7 @@ export const StyledContainer = styled.View`
     padding: 25px;
     height: 100%;
     width: 100%;
-    background-color: ${Colors.primary};
+    justifyContent: center;
 `
 
 export const InnerContainer = styled.View`
@@ -28,7 +28,7 @@ export const PageTitle = styled.Text`
     font-size: 30px;
     text-align: center;
     font-weight: bold;
-    color: ${Colors.brand};
+    color: ${Colors.brand}; 
 `;
 
 export const PageSubTitle = styled.Text`
@@ -44,6 +44,7 @@ export const StyledFormArea = styled.View`
 `;
 
 export const StyledTextLabel = styled.Text`
+font-weight: bold;
 color: ${Colors.tertiary};
 font-size: 13px;
 text-align: left;
@@ -106,6 +107,7 @@ export const ExtraView = styled.View`
 `;
 
 export const ExtraText = styled.Text`
+    font-weight: bold;
     justify-content: center;
     align-content: center;
     color: ${Colors.tertiary};

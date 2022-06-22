@@ -1,6 +1,6 @@
 import React, {useContext} from 'react';
 
-import {Text} from 'react-native';
+import {Text, ImageBackground} from 'react-native';
 
 import {Formik} from 'formik';
 
@@ -51,11 +51,12 @@ const Home = ({navigation}) => {
 
 
     return (
+        <ImageBackground style={{ flex: 1}} source={require('../../../assets/homePattern.jpg')}>
        <StyledContainer>
             <InnerContainer>
                 <PageTitle style={{
                     top: 100,
-                }}>Menu</PageTitle>
+                }}>Home</PageTitle>
                 <Formik
                 >
                 {({handleSubmit}) => (
@@ -94,6 +95,7 @@ const Home = ({navigation}) => {
                 </Formik>
             </InnerContainer>
        </StyledContainer>
+       </ImageBackground>
     );
 }
 

@@ -44,6 +44,8 @@ import {
   TextLinkContent,
 } from '../../components/styles.js';
 
+import {Slideshow} from '../../components/Slideshow.js';
+
 
 const Login=({navigation} : Props)=> {
   const [hidePassword, setHidePassword] = useState(true);
@@ -96,8 +98,12 @@ const Login=({navigation} : Props)=> {
       try{
         result = await axios.get(url, {params : params});
       }catch(err){
-        setMessage(err.response.data.message);
-
+        console.log(err);
+        if(!err.response){
+          await setMessage("No internet connection");
+        }else{
+          await setMessage(err.response.data.message);
+        }
       }
     }
 
@@ -138,9 +144,7 @@ const Login=({navigation} : Props)=> {
             setMessage("Could not secure credentials please try again later.");
           })
     }else if(!message){
-      setMessage("Error setting variables or token")
-    }else{
-      setMessage("An error occured while trying to login, please try again later.");
+      setMessage("Error setting token or no connection available")
     }
     }catch{(error) => {
           if( error.response.status == 404 && error.response.data['message'] != null){
@@ -154,12 +158,11 @@ const Login=({navigation} : Props)=> {
   }
 
   return (  
-      <StyledContainer>
-        <InnerContainer>
-          <PageLogo resizeMode="cover" source={require('../../../assets/favicon.png')}/>
+      <StyledContainer >
+        <Slideshow/>
+        <InnerContainer style={{ top : 100,}}>
           <PageTitle>Quick Recipes</PageTitle>
-          <PageSubTitle>Login</PageSubTitle>
-
+          <PageSubTitle >Login</PageSubTitle>
           <Formik
             initialValues={{email: '', password: ''}}
             onSubmit={(values) => {

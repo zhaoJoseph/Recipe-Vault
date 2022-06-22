@@ -336,7 +336,7 @@ import {
               {...props}/>
           </View>
           <View style={{
-            margin: 10,
+            top: 10,
           }}>
               <StyledButton style={{
                 position: 'absolute',

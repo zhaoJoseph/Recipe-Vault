@@ -32,6 +32,8 @@ import * as yup from 'yup';
 
 import {Colors, Links} from '../../Constants';
 
+import {Slideshow} from '../../components/Slideshow.js';
+
 const Register = ({navigation} : Props) => {
     const [hidePassword, setHidePassword] = useState(true);
 
@@ -61,8 +63,9 @@ const Register = ({navigation} : Props) => {
 
     return (
         <StyledContainer>
-            <InnerContainer>
-                <PageTitle>App</PageTitle>
+          <Slideshow/>
+            <InnerContainer style={{ top : 100,}}>
+                <PageTitle>Quick Recipes</PageTitle>
                 <PageSubTitle>Create your Account</PageSubTitle>
                 <Formik
                     initialValues={{email: '', password: '', }}
