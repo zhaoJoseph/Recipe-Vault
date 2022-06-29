@@ -1,6 +1,6 @@
 import React from 'react';
 
-const base = __DEV__  ? 'http://192.168.1.145:3000' : "https://foodprojectapi-vs7cd2fg5a-uc.a.run.app";
+const base = __DEV__ ? "http://192.168.1.145:3000" : "https://foodapi-jmfqfft64a-uc.a.run.app";
 
 export const Links = {
     recipe: `${base}/recipe`,
