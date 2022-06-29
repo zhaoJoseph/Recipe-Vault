@@ -4,7 +4,7 @@ import { useIsFocused } from '@react-navigation/native';
 
 import {View, Text, Button, Modal, Image, ScrollView, Dimensions} from 'react-native';
 
-import {Octicons, Ionicons, FontAwesome, MaterialCommunityIcons } from '@expo/vector-icons';
+import {Octicons, Ionicons, FontAwesome, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 
 import { Formik } from 'formik';
 
@@ -182,6 +182,7 @@ const Create = ({navigation, route} : Props) => {
     return (   
         <StyledContainer>
           <Modal
+            title=""
             animationType="fade"
             transparent={false}
             visible={modalVisible}
@@ -244,7 +245,8 @@ const Create = ({navigation, route} : Props) => {
                         keyboardType='numeric'
                         placeholderTextColor={Colors.darklight}
                         />
-                      <Button  
+                      <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                      <MaterialIcons.Button name="add-a-photo"
                       onPress={() => {
                         if(!recipe.hasOwnProperty('images') || recipe.images?.length < 3){
                           navigation.navigate("CreateStack", {screen: "CameraModal", params: {mode: route.params.mode}})
@@ -253,10 +255,11 @@ const Create = ({navigation, route} : Props) => {
                         }
                           }
                           }
-                              title="Add Image"
-                      />
+                      >
+                        Add Photos
+                      </MaterialIcons.Button>
 
-                      <Button
+                      <FontAwesome.Button name="photo"
                       onPress={() => {
                         if(recipe.hasOwnProperty('images') && recipe.images.length > 0){
                           setModalVisible(true);
@@ -265,8 +268,10 @@ const Create = ({navigation, route} : Props) => {
                         }
                       }
                       }
-                      title="Show Images"
-                      />
+                      >
+                        View Images
+                      </FontAwesome.Button>
+                      </View>
                       <StyledButton
                       onPress={handleSubmit}
                       >

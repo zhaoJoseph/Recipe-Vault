@@ -1,6 +1,6 @@
-import React , {useContext, useEffect, useState} from 'react';
+import React , {useContext, useEffect, useState, useRef} from 'react';
 
-import {Text, TextInput, Button, View} from 'react-native';
+import {Text, TextInput, Button, View, ActivityIndicator} from 'react-native';
 
 import {tabContext} from '../../Context/tabContext';
 
@@ -17,6 +17,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useToast } from "react-native-toast-notifications";
 
 import {getToken} from '../../helpers';
+
+import TabIcon from '../../navigators/TabIcon';
 
 import {StyledContainer, 
         InnerContainer,
@@ -45,10 +47,23 @@ const CreateStep = ({navigation, route} : Props) => {
 
     const listToast = useToast();
 
+    const [deleteTab, setDeleteTab] = useState(false);
+
+    React.useEffect(() => {
+        navigation.setOptions({
+            tabBarIcon: () => (
+                <TabIcon deleteTab={deleteTab}/>
+            ),
+        })
+      }, [deleteTab])
+
     const removeTab = (route) => {
         setLoading(!loading);
         const deleteItem = tabs.find(tab =>{return tab.name == route.name});
-        setTabs(tabs => tabs.filter(tab => {if(tab.name != route.name){if(parseInt(tab.stepTitle.replace("Step ", "")) > parseInt(deleteItem.stepTitle.replace("Step ", ""))){tab.stepTitle = 'Step ' + (parseInt(tab.stepTitle.replace("Step ", "")) - 1);}     return tab;}}));
+        setDeleteTab(true);
+        setTimeout(() => {
+            setTabs(tabs => tabs.filter(tab => {if(tab.name != route.name){if(parseInt(tab.stepTitle.replace("Step ", "")) > parseInt(deleteItem.stepTitle.replace("Step ", ""))){tab.stepTitle = 'Step ' + (parseInt(tab.stepTitle.replace("Step ", "")) - 1);}     return tab;}}));
+        }, 1000);
     }
 
     const addTab = () => {
@@ -164,9 +179,7 @@ const CreateStep = ({navigation, route} : Props) => {
     return (
             <StyledContainer>
             {loading ? <View>
-                <Text>
-                    Loading...
-                </Text>
+                <ActivityIndicator size="large" />
             </View> : 
             (<InnerContainer>
                 <StyledFormArea>    
@@ -180,13 +193,14 @@ const CreateStep = ({navigation, route} : Props) => {
                     flex: 1,
                     flexDirection: 'row',
                     position: 'absolute',
-                    bottom: 0,
+                    bottom: 100,
                     justifyContent: 'space-between',
                     width: '100%',
+                    elevation: 5,
                 }}>
                 {(tabs.length < 15) ? (<Button title="Add Step" onPress={addTab} />) : null}
                 {(route.name != 'Step 1') ? (<Button title="Remove Step" onPress={() => removeTab(route)}/>) : null }
-                <Button title="Finish Recipe" onPress={finishRecipe}/>
+                <Button title="Finish Recipe" onPress={finishRecipe} />
                 </View>
             </InnerContainer>)}
         </StyledContainer> 

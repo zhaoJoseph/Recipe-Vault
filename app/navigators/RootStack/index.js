@@ -1,8 +1,11 @@
 import React, {useState} from 'react';
 
- import {Colors} from '../../Constants/Colors';
+import {Colors} from '../../Constants/Colors';
 
-import {Text, View, Button} from 'react-native';
+import {Octicons, Ionicons, Foundation} from '@expo/vector-icons';
+
+
+import {Text, View, Button, StyleSheet, Image, Animated} from 'react-native';
 
 import {createStackNavigator} from '@react-navigation/stack';
 import {NavigationContainer} from '@react-navigation/native';
@@ -28,6 +31,7 @@ import ImportRecipe from '../../screens/ImportRecipe';
 import Locate from '../../screens/Locate';
 import Logout from '../../screens/Logout';
 import CameraModal from '../../screens/CameraModal';
+import TabIcon from '../TabIcon';
 
 const Stack = createStackNavigator();
 
@@ -42,16 +46,34 @@ const StepStack = () => {
         {({tabs}) => (
         <StepTabs.Navigator
         screenOptions={{
-        tabBarHideOnKeyboard: true
+            tabBarStyle: {
+                position: 'absolute',
+                borderRadius: 16,
+                height: 60,
+                bottom: 20,
+                right: 30,
+                left: 30,
+            }
         }}  
         >
             {
-                tabs.map((tab) => <StepTabs.Screen key={tab.name} name={tab.name} stepTitle={tab.stepTitle} component={tab.component} initialParams={tab.initialParams}
-                options={{
-                    tabBarLabel: `${tab.stepTitle}`,
-                    headerTitle: `${tab.stepTitle}`,
-                }}
-                /> )
+                tabs.map((tab) => {
+                return (<StepTabs.Screen 
+                        key={tab.name} 
+                        name={tab.name} 
+                        stepTitle={tab.stepTitle} 
+                        component={tab.component} 
+                        initialParams={tab.initialParams}
+
+                        options={{
+                            tabBarLabel: `${tab.stepTitle}`,
+                            headerTitle: `${tab.stepTitle}`,
+                            headerTitleAlign: 'center',
+                            tabBarIcon: () => (
+                                <View />
+                            ),
+                        }}
+                        />) })
             }
         </StepTabs.Navigator>
         )}
@@ -79,13 +101,58 @@ const CreateStack = () => {
         <ingredientContext.Provider value={{ingredientsList, setIngredientsList}}>
         <tabContext.Provider value={{tabs, setTabs}}>
         <StackCreate.Navigator>   
-        <StackCreate.Screen name="Create" component={Create}/>
+        <StackCreate.Screen name="Create" component={Create}
+        options={{
+            headerTitle: "Create A Recipe",
+            headerBackground: () => (<Image
+            source={require('../../../assets/bluepoly.jpg')}
+            style={{flex: 1, height: '100%', width: 900, position: 'absolute', left: 0, top: 0}}
+            resizeMode='cover'
+            />),
+        }}
+        />
         <StackCreate.Screen name="CameraModal" component={CameraModal} 
-        screenOptions={{presentation: 'modal' }}/>
-        <StackCreate.Screen name="IngredientStep" component={IngredientStep}/>
+        options={{
+            headerTitle: "Select An Image",
+            headerBackground: () => (<Image
+            source={require('../../../assets/bluepoly.jpg')}
+            style={{flex: 1, height: '100%', width: 900, position: 'absolute', left: 0, top: 0}}
+            resizeMode='cover'
+            />),
+        }}
+        screenOptions={{
+            presentation: 'modal' 
+        }}/>
+        <StackCreate.Screen name="IngredientStep" component={IngredientStep}
+        options={{
+            headerTitle: "List Ingredients",
+            headerBackground: () => (<Image
+            source={require('../../../assets/bluepoly.jpg')}
+            style={{flex: 1, height: '100%', width: 900, position: 'absolute', left: 0, top: 0}}
+            resizeMode='cover'
+            />),
+        }}
+        />
         <StackCreate.Screen name="Add Ingredient" component={ModalScreen} 
+        options={{
+            headerTitle: "Create Ingredient",
+            headerBackground: () => (<Image
+            source={require('../../../assets/bluepoly.jpg')}
+            style={{flex: 1, height: '100%', width: 900, position: 'absolute', left: 0, top: 0}}
+            resizeMode='cover'
+            />),
+        }}
         screenOptions={{ presentation: 'modal' }}/>
-        <StackCreate.Screen name="StepStack" component={StepStack}/>
+        <StackCreate.Screen name="StepStack" component={StepStack}
+        options={{
+            headerTitle: "Steps",
+            headerBackground: () => (<Image
+            source={require('../../../assets/bluepoly.jpg')}
+            style={{flex: 1, height: '100%', width: 900, position: 'absolute', left: 0, top: 0}}
+            resizeMode='cover'
+            />),
+        }}
+        />
         </StackCreate.Navigator>
         </tabContext.Provider>
         </ingredientContext.Provider>
@@ -101,34 +168,72 @@ const RootStack =() => {
             {({UserId, loading}) => (            
             <NavigationContainer>
                 <Stack.Navigator
-                    screenOptions={{
-                        headerStyle: {
-                            backgroundColor: "transparent",
-                        },
-                        headerShown: false,
-                        headerTintColor: Colors.tertiary,
-                        headerTransparent: true,
-                        headerTitle: '',
-                        headerLeftContainerStyle: {
-                            paddingLeft: 20,
-                        }
-                    }}
                 >
                     {UserId ? (
                     <Stack.Group>
-                    <Stack.Screen name="Home" component={Home}/>
-                    <Stack.Screen name="Recipes" component={Recipes} />
+                    <Stack.Screen name="Home" component={Home}
+                    options={{
+                        headerShown: false
+                    }}
+                    />
+                    <Stack.Screen name="Recipes" component={Recipes} 
+                    options={{
+                        headerTitle: "Your Recipes",
+                        headerBackground: () => (<Image
+                        source={require('../../../assets/bluepoly.jpg')}
+                        style={{flex: 1, height: '100%', width: 900, position: 'absolute', left: 0, top: 0}}
+                        resizeMode='cover'
+                        />),
+                    }}
+                    />
                     <Stack.Screen name="View Recipe" component={ViewRecipe} 
+                    options={{
+                        headerShown: false
+                    }}
                     screenOptions={{ presentation: 'modal' }}/>
-                    <Stack.Screen name="Import" component={ImportRecipe} />
-                    <Stack.Screen name="Locate" component={Locate} />
-                    <Stack.Screen name="CreateStack" component={CreateStack} />
-                    <Stack.Screen name="Logout" component={Logout} />
+                    <Stack.Screen name="Import" component={ImportRecipe}
+                    options={{
+                        headerTitle: "Import Recipes",
+                        headerBackground: () => (<Image
+                        source={require('../../../assets/bluepoly.jpg')}
+                        style={{flex: 1, height: '100%', width: 900, position: 'absolute', left: 0, top: 0}}
+                        resizeMode='cover'
+                        />),
+                    }}
+                    />
+                    <Stack.Screen name="Locate" component={Locate} 
+                    options={{
+                        headerTitle: "Locate Ingredients",
+                        headerBackground: () => (<Image
+                        source={require('../../../assets/bluepoly.jpg')}
+                        style={{flex: 1, height: '100%', width: 900, position: 'absolute', left: 0, top: 0}}
+                        resizeMode='cover'
+                        />),
+                    }}
+                    />
+                    <Stack.Screen name="CreateStack" component={CreateStack} 
+                    options={{
+                        headerShown: false
+                    }}
+                    />
+                    <Stack.Screen name="Logout" component={Logout} 
+                    options={{
+                        headerShown: false
+                    }}
+                    />
                     </Stack.Group>
                     ) : (
                     <Stack.Group>
-                    <Stack.Screen name="Login" component={Login}/>
-                    <Stack.Screen name="Register" component={Register}/>
+                    <Stack.Screen name="Login" component={Login}
+                    options={{
+                        headerShown: false
+                    }}
+                    />
+                    <Stack.Screen name="Register" component={Register}
+                    options={{
+                        headerShown: false
+                    }}
+                    />
                     </Stack.Group>
                     )}
                 </Stack.Navigator> 
@@ -139,5 +244,6 @@ const RootStack =() => {
     );
 
 }
+
 
 export default RootStack;
