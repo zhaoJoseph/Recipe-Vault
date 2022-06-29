@@ -1,23 +1,31 @@
-import React from 'react';
+import React, {useState, useEffect, useRef, useLayoutEffect} from 'react';
 
-import {View, Text} from 'react-native';
+import {View, Text, Modal, ScrollView, Animated, StyleSheet} from 'react-native';
 
 import axios from 'axios';
 
 import {Formik} from 'formik';
 
+import {Octicons, Ionicons} from '@expo/vector-icons';
+
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import {getToken} from '../../helpers';
 
-import {Links} from '../../Constants/Links';
+import {Links, Colors} from '../../Constants';
 
 import { useToast } from "react-native-toast-notifications";
+
+import {Picker as SelectedPicker} from '@react-native-picker/picker';
+
+import * as Clipboard from 'expo-clipboard';
 
 import {StyledContainer, 
     InnerContainer,
     StyledFormArea,
+    CenterIcon,
     LeftIcon,
+    RightIcon,
     StyledTextLabel,
     StyledTextInput,
     ButtonText,
@@ -30,6 +38,12 @@ import {StyledContainer,
 const ImportRecipe = ({navigation}) => {
 
     const errorToast = useToast();
+
+    const [viewBookmarks, setViewBookmarks] = useState(false);    
+
+    const [bookmarks, setBookmarks] = useState([]);
+
+    const [bookmarkList, setBookmarkList] = useState(false);
 
     const getURL = async (RecipeURL) => {
         const url = Links.url;
@@ -57,6 +71,21 @@ const ImportRecipe = ({navigation}) => {
             errorToast.show("Could not fetch url.");
         })
     }
+
+    useEffect(() => {
+            AsyncStorage.getItem('id').then(id => {
+                var arrString = `${id}` + ' bookmarks';
+                AsyncStorage.getItem(arrString).then((res) => {
+                    let arr = JSON.parse(res);
+                    if(arr){
+                        setBookmarks(arr);
+                    }
+                })
+            }).catch(err => {
+                console.log(err);
+            })
+
+    },[])
 
     function extractTimes(recipe, timeStr){
 
@@ -154,9 +183,176 @@ const ImportRecipe = ({navigation}) => {
 
     }
 
+    const BookmarkView = (props : Props) => {
+
+        const [bounceValue] = useState(new Animated.Value(0));
+
+        const [newBookmark, setNewBookmark] = useState("");
+
+        useEffect(() => {
+            var toValue = 60;
+
+            if(bookmarks.length == 1){
+                toValue = 185;
+            }else if(bookmarks.length == 2){
+                toValue = 240;
+            }else if(bookmarks.length >= 3){
+                toValue = 305;
+            }
+
+            if(props.viewBookmarks){
+                toValue = 0;
+            }
+
+            Animated.spring(
+                bounceValue,
+                {
+                    toValue: toValue,
+                    velocity: 3,
+                    tension: 2,
+                    friction: 8,
+                    useNativeDriver: true,
+                }
+            ).start();
+            
+        },[props.viewBookmarks])
+
+        useEffect(() => {
+            (async () => {
+                if(bookmarks.length > 0){
+                    setNewBookmark("");
+                    const bookmarkString = JSON.stringify(bookmarks);
+                    var id = await AsyncStorage.getItem('id');
+                    try{
+                        await AsyncStorage.setItem(`${id}` + ' bookmarks', bookmarkString);
+                    }catch(err){
+                        console.log(err);
+                    }
+                }else if(bookmarks.length == 0 ){
+                    setBookmarkList(false);
+                }
+            })()
+        },[bookmarks])
+
+        const addBookmark = () => {
+            if(newBookmark){
+                setBookmarks([...bookmarks, newBookmark]);
+            }
+        }
+
+        return(
+            <Animated.View style={{flex: 1, position: 'absolute', bottom: 0, width: '100%', alignItems: 'center', translateY : bounceValue,}}>
+                <Octicons name={"bookmark"} size={30} color={props.viewBookmarks ? Colors.brand : Colors.tertiary} 
+                        onPress={() => {setViewBookmarks(!props.viewBookmarks)}} style={{position: 'relative', top: 0}}/>
+                <View style={{ postion: 'absolute', width: '100%', height: 60}}>
+                    <MyTextInput 
+                    icon="bookmark"
+                    placeholder="Add bookmark."
+                    rightIcon="add-circle"
+                    value={newBookmark}
+                    onChangeText={e => {setNewBookmark(e)}}
+                    onpress={() => addBookmark()}
+                    />
+                </View>
+                {
+                bookmarks.length >= 1 && <BookmarkLink url={bookmarks[0]}/>   
+                }
+                {
+                bookmarks.length >= 2 && <BookmarkLink url={bookmarks[1]}/>  
+                }
+                {
+                bookmarks.length >= 3 && <BookmarkLink url={bookmarks[2]}/>  
+                }
+                {
+                bookmarks.length > 0 && 
+                <View style={{ flex: 1, height: 30, marginTop: 30}}>
+                <Ionicons name={"reorder-three"} size={30} color={props.viewBookmarks ? Colors.brand : Colors.tertiary} 
+                onPress={() => {setBookmarkList(!bookmarkList)}} />
+                </View>
+                }
+            </Animated.View>
+        )
+        
+    }
+
+    const BookmarkLink = (props : Props) => {
+
+        const [readonly, setReadonly] = useState(false);
+
+        const pickerRef = useRef(0);
+
+        const [selected, setSelectedValue] = useState("");
+
+        useEffect(() => {
+            (async () => {
+                if(selected == 'Copy'){
+                    Clipboard.setString(props.url);
+                }else if(selected == 'Delete'){
+                    await setBookmarks(bookmarks.filter(function(url) {
+                        return url != props.url;
+                    }))
+                }
+            })()
+        },[selected])
+
+        function open() {
+            pickerRef.current.focus();
+        }
+
+        function close() {
+            pickerRef.current.blur();
+        }
+
+        return(
+            <View style={{width: '100%', height: 60}}>
+                <MyTextInput 
+                    icon="bookmark"
+                    rightIcon="reorder-three"
+                    onpress={() => {
+                        if(pickerRef.current){
+                            open();
+                        }else{
+                            close();
+                        }
+                    }}
+                    defaultValue={`${props.url}`}
+                    editable={readonly}
+                    style={{ backgroundColor : 'white', borderWidth: 2, borderColor: `${Colors.secondary}`}}
+                />
+                <View style={{ position: 'absolute', bottom: -30, right: 60}}>
+                <SelectedPicker
+                    ref={pickerRef}
+                    mode="dropdown"
+                    selectedValue={selected || undefined}
+                    onValueChange={(value) => {setSelectedValue(value)}}
+                    dropdownIconColor={`white`}
+                >
+                <SelectedPicker.Item label="Options" value=""/>    
+                <SelectedPicker.Item label="Copy" value="Copy"/>
+                <SelectedPicker.Item label="Delete" value="Delete" />
+                </SelectedPicker>
+            </View>
+            </View>
+        )
+    }
+
 
     return (
         <StyledContainer>
+            <Modal
+            animated
+            animationType="slide"
+            visible={bookmarkList}
+            >
+                <View style={{ flex: 1, alignItems: 'center', height: '100%', width: '100%'}}>
+                <ScrollView style={{ flex: 1, height: '90%', width: '100%' }}  contentContainerStyle={{ flexGrow: 1 }}>
+                    {bookmarks.map((val, index) => (
+                     <BookmarkLink url={val} key={index} /> 
+                    ))}
+                </ScrollView>
+                <Ionicons name={"chevron-down"} size={30} onPress={() => {setBookmarkList(!bookmarkList); setViewBookmarks(!viewBookmarks);}} style={{position: 'relative', bottom: 0,}}/>
+                </View>
+            </Modal>
             <InnerContainer style={{
                 flex: 1,
                 alignItems: 'center',
@@ -169,12 +365,17 @@ const ImportRecipe = ({navigation}) => {
                 }}
                 >
                 {({handleChange, handleBlur, handleSubmit, values}) => (
-                <StyledFormArea>
+                <StyledFormArea
+                style={{ flex: 1, top: 150}}
+                >
                     <MyTextInput   
+                    icon="link"
                     onChangeText={handleChange('url')}
                     onBlur={handleBlur('url')}
                     value={values.url}
                     placeholder="Enter Recipe URL Here"
+                    leftColor={Colors.brand}
+                    rightColor={Colors.tertiary}
                     />
                     <StyledButton
                     onPress={handleSubmit}
@@ -183,16 +384,26 @@ const ImportRecipe = ({navigation}) => {
                     </StyledButton>
                 </StyledFormArea>)}
                 </Formik>
+                <BookmarkView viewBookmarks={viewBookmarks}/>
             </InnerContainer>
         </StyledContainer>
-    )
+    )   
+
 }
 
-const MyTextInput = ({label, ...props} : Props) => {
+const MyTextInput = ({label, icon, rightIcon, onpress, leftColor, rightColor, background, ...props} : Props) => {
   return  (
     <View>
+    <LeftIcon>
+        <Octicons name={icon} size={30} color={leftColor} />
+    </LeftIcon>
       <StyledTextLabel>{label}</StyledTextLabel>
-      <StyledTextInput {...props}/>
+      <StyledTextInput  style={{color: background ? `${Colors.secondary}` :`${Colors.tertiary}` }} {...props}/>
+      {rightIcon && (
+        <RightIcon onPress={onpress}>
+          <Ionicons name={rightIcon} size={30} color={rightColor}/>
+        </RightIcon>
+      )}
     </View> 
   )
 }
