@@ -1,6 +1,6 @@
 import React, {useEffect, useState, Component} from 'react';
 
-import { View, Text, VirtualizedView, TouchableOpacity, ActivityIndicator, SafeAreaView, ToastAndroid } from 'react-native';
+import { View, Text, VirtualizedView, TouchableOpacity, ActivityIndicator, SafeAreaView, ToastAndroid, Dimensions } from 'react-native';
 
 import {Colors, Links} from '../../Constants';
 
@@ -28,6 +28,8 @@ import {
     } from '../../components/styles.js';
 
 import RecipeItem from './RecipeItem';
+
+const {width} = Dimensions.get('window');
 
 class Flatlist extends Component {
 
@@ -257,6 +259,7 @@ class Flatlist extends Component {
             keyExtractor={item => item.id}
             scrollEnabled={this.state.enable}
             extraData={this.state.refreshing}
+            style={{ width: width}}
           />
           );
       };

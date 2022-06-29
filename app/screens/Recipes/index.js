@@ -25,6 +25,8 @@ FloatingButton,
 ButtonView,
 } from '../../components/styles.js';
 
+const {width} = Dimensions.get('window');
+
 const Recipes = ({navigation} : Props) => {
 
     const [searchTerm, setSearchTerm] = useState("");
@@ -36,9 +38,8 @@ const Recipes = ({navigation} : Props) => {
     }
 
     return (
-        <StyledContainer>
-            <InnerContainer>
-                    <View>
+        <StyledContainer style={{ position: 'absolute', width: width }}>
+            <InnerContainer style={{ position: 'absolute', width: width, top: 0}}>
                         <MySearchBar
                         icon="search"
                         placeholder="Search your recipes"
@@ -47,16 +48,17 @@ const Recipes = ({navigation} : Props) => {
                         search={(e) => listRef.current.fetchResult({term: e})}
                         />
                         <View style={{
-                            top: 80, 
+                            top: 50, 
+                            position: 'absolute',
                         }}>
                         <Flatlist ref={listRef} navigation={navigation} />
                         </View>
                         <FloatingButton
                         onPress={addRecipe}
+                        style={{position: 'absolute', right: 20}}
                         >
                             <Text> + </Text>
                         </FloatingButton>
-                    </View>
             </InnerContainer>
         </StyledContainer>
     );
@@ -67,10 +69,9 @@ const MySearchBar = ({icon, searchTerm, onChange, search, ...props} : Props) => 
 
     return (
         <View style={{
-            flex: 1,    
-            height: 60,
-            width: Dimensions.get('window').width,
-            marginLeft: 10,
+            position: 'absolute',
+            top: 0,
+            width: width,
         }}>
             <LeftIcon style={{ top : 20 }}>
                 <Octicons name={icon} size={30} color={Colors.black} />

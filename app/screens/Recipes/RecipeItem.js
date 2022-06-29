@@ -192,7 +192,7 @@ class RecipeItem extends Component {
 
         return (
             <View style={{
-                width: '50%',
+                width: '50%'
             }}>
                 <Animated.View style={[this.state.position.getLayout()]} {...this.Panresponder.panHandlers}>
                 {(this.state.color == '') ? 
