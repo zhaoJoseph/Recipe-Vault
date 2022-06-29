@@ -136,6 +136,7 @@ import {
             flex: 1,
             flexDirection: 'row',
             justifyContent: 'space-between',
+            flexWrap: 'wrap'
           }}>
           <Text style={{
             fontWeight: 'bold',
@@ -146,17 +147,17 @@ import {
             flexWrap: 'wrap',
             flexDirection: 'row',
           }}>
-          <Text>{item.formatted_address}</Text>
+          <Text numberOfLines={1}>{item.formatted_address}</Text>
           {(item.opening_hours && item.opening_hours.open_now)&&<Text style={{
             borderWidth: 1,
             borderColor: 'blue',
             borderRadius: 1,
             color: `${Colors.brand}`,
           }}>Open Now</Text>}
-          <Text style={{
-            paddingLeft: (item.opening_hours && item.opening_hours.open_now) ? 10 : 0,
-          }}>{item.rating} / 5 </Text>
           </View>
+          <Text style={{
+            right: 0,
+          }}>{item.rating} / 5 </Text>
         </View>
       )
 
@@ -186,6 +187,8 @@ import {
       }).catch((err) => {
         token = null;
         console.log(err);
+        listToast.show("Maps API is not working try again later.");
+        navigation.navigate('Home');
       })
     })();
     }
@@ -291,7 +294,8 @@ import {
               disabled={loadingResults}
               onPress={async () => {if(text != errorMsg)
                   {
-                    if(ingredients.length > 0){
+
+                    if(ingredients.length > 1){
                       setLoadingResults(true);
                       getResults();
                     }else{
