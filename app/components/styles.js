@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled from 'styled-components/native';
 import Constants from 'expo-constants';
 import { FlatList } from 'react-native-gesture-handler';
 import {View, Text, Image, TextInput, TouchableOpacity, Dimensions} from 'react-native';
@@ -77,9 +77,14 @@ export const LeftIcon = styled.View`
     z-index: 1;
 `;
 
+export const CenterIcon = styled.View`
+    position: absolute;
+    z-index: 1;
+`;
+
 export const RightIcon = styled.TouchableOpacity`
-    right: 30px;
-    top: 38px;
+    right: 20px;
+    top: 35px;
     position: absolute;
     z-index: 1;
 `;
@@ -88,6 +93,7 @@ export const StyledButton = styled.TouchableOpacity`
     padding: 15px;
     background-color: ${Colors.brand};
     justify-content: center;
+    flex-direction: row;
     align-items: center;
     border-radius: 5px;
     margin-vertical: 5px;
@@ -145,6 +151,7 @@ export const StyledFlatList = styled.FlatList.attrs(() => ({
     },
 }))`
     height: 90%;
+    width: 100%;
     margin: 10px;
     marginBottom: 90px;
 `;
