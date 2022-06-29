@@ -6,7 +6,7 @@ React Native App to quickly create cooking recipes with an easy to follow UI.
 
 - 📫 How to reach me **zhao.joseph@yahoo.ca**
 
-<h3 align="left">Connect with me:</h3>
+<h3 align="left">Connect with me: https://www.linkedin.com/in/zhao-joseph/</h3>
 <p align="left">
 </p>
 
