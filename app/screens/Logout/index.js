@@ -36,7 +36,8 @@ const Logout = () => {
 
     useEffect(() => {
 
-        AsyncStorage.clear()
+        let keys = ['id', 'access_token', 'refresh_token'];
+        AsyncStorage.multiRemove(keys)
         .then(() =>{
             setUserId(null);
         })

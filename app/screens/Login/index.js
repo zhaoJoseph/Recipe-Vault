@@ -1,6 +1,6 @@
 import React, {useState, useContext} from 'react';
 
-import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
+import {View, Text, TouchableOpacity, ActivityIndicator} from 'react-native';
 
 import {Octicons, Ionicons} from '@expo/vector-icons';
 
@@ -52,6 +52,8 @@ const Login=({navigation} : Props)=> {
 
   const [message, setMessage] = useState();
 
+  const [isLoading, setLoading] = useState(false);
+
   const {UserId, setUserId} = useContext(userContext);
 
   //create verifier and challenge code https://www.loginradius.com/blog/engineering/pkce/
@@ -72,6 +74,8 @@ const Login=({navigation} : Props)=> {
 
 
   const handleLogin = async (credentials) => {
+
+    setLoading(!isLoading);
     const url = Links.accesscode;
     try{
     const randomBytes = await Random.getRandomBytesAsync(32);
@@ -83,8 +87,12 @@ const Login=({navigation} : Props)=> {
       try{
         var challenge = base64URLEncode(await sha256(verifier));
       }catch(err){
+        setLoading(false);
         console.log(err);
       }
+
+
+
       await AsyncStorage.setItem('verifier', verifier);
       let params = {
         username: credentials.email,
@@ -98,6 +106,7 @@ const Login=({navigation} : Props)=> {
       try{
         result = await axios.get(url, {params : params});
       }catch(err){
+        setLoading(false);
         console.log(err);
         if(!err.response){
           await setMessage("No internet connection");
@@ -127,26 +136,30 @@ const Login=({navigation} : Props)=> {
       tokenResult = await new Promise((resolve, reject) => {
         resolve(axios.post(tokenRequest.url, body, config));
       })
-      await AsyncStorage.clear();
+      await AsyncStorage.removeItem('verifier');
       verifier = null;
     }
 
     if(tokenResult){
       var items = [['access_token', tokenResult.data.access_token], ['id', tokenResult.data.id], ['refresh_token', tokenResult.data.refresh_token]]
 
-      await AsyncStorage
-          .multiSet(items)
-          .then(()=> {
-            setUserId({id: tokenResult.data.id})
-          })
-          .catch((error) => {
-            console.log(error);
-            setMessage("Could not secure credentials please try again later.");
-          })
-    }else if(!message){
-      setMessage("Error setting token or no connection available")
+      try {
+        await AsyncStorage
+        .multiSet(items)
+        .then(async ()=> {  
+          setUserId({id: tokenResult.data.id});
+          setLoading(!isLoading);
+        })
+
+      } catch (error) {
+        setLoading(false);
+        console.log(error);
+        setMessage("Could not secure credentials please try again later.");
+      }
+
     }
     }catch{(error) => {
+        setLoading(false);
           if( error.response.status == 404 && error.response.data['message'] != null){
             const errorMessage = error.response.data['message'];
             setMessage(errorMessage);
@@ -205,6 +218,7 @@ const Login=({navigation} : Props)=> {
               onPress={handleSubmit}
               >
                 <ButtonText>Login</ButtonText>
+                {isLoading && <ActivityIndicator size="large" />}
               </StyledButton>
                 <ExtraView>
                   <ExtraText>

@@ -34,7 +34,12 @@ import {Colors, Links} from '../../Constants';
 
 import {Slideshow} from '../../components/Slideshow.js';
 
+import { useToast } from "react-native-toast-notifications";
+
 const Register = ({navigation} : Props) => {
+
+    const registerToast = useToast();
+
     const [hidePassword, setHidePassword] = useState(true);
 
     const [message, setMessage] = useState();
@@ -46,15 +51,21 @@ const Register = ({navigation} : Props) => {
       password: credentials.password
       }}).then((res) => {
         const result = res.data;
-        if(result.message == 'Account Created!'){
-          navigation.navigate('Login')
-        }else if(result.message == 'Error'){
-          let errorBody = JSON.parse(result.error);
-          if(errorBody.code == "ER_DUP_ENTRY"){
-            setMessage("Email already in use.");
-          }
-        }else{
+        if(result.error){
+          console.log(result.error);
           setMessage("An error occured please try again later");
+        }else{
+          if(result.message == 'Account Created!'){
+            registerToast.show(result.message);
+            navigation.navigate('Login');
+          }else if(result.message == 'Error'){
+            let errorBody = JSON.parse(result.error);
+            if(errorBody.code == "ER_DUP_ENTRY"){
+              setMessage("Email already in use.");
+            }
+          }else{
+            setMessage("An error occured please try again later");
+          }
         }
       }).catch((error) => {
           setMessage("An error occured while trying to register, please try again later.");
