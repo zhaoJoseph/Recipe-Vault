@@ -1,5 +1,36 @@
 # recipeFoodApp
-React Native App to quickly create cooking recipes with an easy to follow UI.
+React Native App to quickly create cooking recipes with an easy to follow UI. 
+
+# Running the App
+Follow the link to scan the barcode: https://expo.dev/@josephzhao/recipeFoodApp?serviceType=classic&distribution=expo-go
+
+# Motivation
+This project is a mobile expo app meant to help become a quick tool for creating/importing and storing recipes.
+
+# Features
+- Storing recipes per account
+- Login authentication with pkce oauth flow
+- Registration by email
+- Unlimited storage of recipes
+- Search recipes by name or ingredient
+- Taking photos of recipes
+- Importing recipes from online websites
+- Locate food related searches within the vicinity
+- Editable recipes
+- Save bookmarks for websites offline
+- Delete recipes via swiping gestures
+
+# Technology Used
+- Gcloud for backend handling authentication requests 
+- Express Node JS server running on cloud run instance for handling authentication logic
+- CloudSQL using MySQL database for storing user recipes and authentication data
+- Expo React native frontend for the mobile app
+- Eslint
+
+# Challenges Faced
+- Writing scraping algorithms for importing recipes from websites, I wrote a algorithm that parses the html tree structure for websites that do not use ld json data to save recipes
+- Wrote OAuth2 pkce flow from scratch 
+
 
 <h1 align="center">Hi 👋, I'm Joseph Zhao</h1>
 <h3 align="center">A passionate future fullstack developer</h3>
