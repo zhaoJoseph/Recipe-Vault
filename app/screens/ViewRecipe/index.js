@@ -229,6 +229,7 @@ const renderSwitch = (step, isLoading, recipe, ingredients, windowWidth) => {
                       showsHorizontalScrollIndicator={false}
                     style={{
                         top: 50,
+                        height: '80%',
                     }}>
                     {ingredients}
                     </ScrollView>
