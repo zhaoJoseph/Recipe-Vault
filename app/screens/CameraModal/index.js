@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Image, Button } from 'react-native';
-
+import { View, Text, StyleSheet, Image, Button, TouchableOpacity } from 'react-native';
+import {Colors} from '../../Constants/Colors';
 import * as ImagePicker from 'expo-image-picker';
 
 const CameraModal = ({navigation, route} : Props) => {
@@ -59,18 +59,25 @@ const CameraModal = ({navigation, route} : Props) => {
 
   return (
     <View style={styles.screen}>
-      <View style={styles.buttonContainer}>
-        <Button onPress={showImagePicker} title="Select an image" />
-        <Button onPress={openCamera} title="Open camera" />
-        <Button onPress={() => submitImage()} title="Select" />
-      </View>
-
       <View style={styles.imageContainer}>
         {
-          pickedImagePath !== '' && <Image
+          (pickedImagePath !== '') ? <Image
             source={{ uri: pickedImagePath }}
             style={styles.image}
-          />
+          /> : <Text>No image selected</Text>
+        }
+      </View>
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity onPress={showImagePicker} style={{ width: 100, backgroundColor: `${Colors.brand}`, borderRadius: 10 }} >
+          <Text style={{ textAlign: 'center' }}>Select An Image</Text>
+        </TouchableOpacity>
+        <TouchableOpacity  onPress={openCamera} style={{ width: 100 , backgroundColor: `${Colors.brand}`, borderRadius: 10 }} >
+          <Text style={{ textAlign: 'center' }}>Open Camera</Text>
+        </TouchableOpacity>
+      </View>
+      <View style={{ position: 'absolute', bottom: 50}}>
+        {
+          pickedImagePath !== '' && <Button onPress={() => submitImage()} title="Select" style={{ flex: 1, postion: 'absolute', bottom : 0 }} />
         }
       </View>
     </View>
@@ -82,20 +89,33 @@ export default CameraModal;
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
+    width: '100%',
+    height: '100%',
+    position: 'absolute',
     justifyContent: 'center',
     alignItems: 'center',
   },
   buttonContainer: {
-    width: 400,
+    position: 'absolute',
+    flex: 1,
+    bottom: 100,
+    width: '100%',
     flexDirection: 'row',
     justifyContent: 'space-around'
   },
   imageContainer: {
-    padding: 30
+    flex: 1,
+    top: 0,
+    position: 'absolute',
+    height: '100%',
+    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   image: {
-    width: 400,
-    height: 300,
+    flex: 1,
+    height: '100%',
+    width: '100%',
     resizeMode: 'cover'
   }
 });
